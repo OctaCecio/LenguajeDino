@@ -1,4 +1,4 @@
-from scanner import LexerDino  
+from Auxiliares.scanner import LexerDino  
 
 codigo_prueba = """
 <Trampa mortal> = Correr

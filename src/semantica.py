@@ -1,0 +1,199 @@
+class AnalizadorSemantico:
+    def __init__(self):
+        self.tabla_simbolos = {}
+
+        self.reglas_terreno = {
+            "Pasto": ["Correr", "Saltar"],
+            "Agua": ["Nadar"],
+            "Lava": ["Saltar"],
+            "Nave": ["Despegar"],
+            "Paloma": ["Saltar"],
+            "Aguila": ["Saltar"]
+        }
+
+        self.requisitos_salto = {
+            "Lava": "simple",
+            "Paloma": "doble",
+            "Aguila": "triple"
+        }
+
+    def validar_fisicas_del_juego(self, secuencia_mapa, secuencia_juego):
+        print("\n--- Validando Físicas y Bucles ---")
+        
+        # Tenia zip para recorrer dos listas en simultaneo.. pero no tenia forma de usar mi while (mientras en DINO), asi que lo hago con 2 while
+        cursor_mapa = 0
+        cursor_juego = 0
+        paso = 1
+
+        while cursor_mapa < len(secuencia_mapa) and cursor_juego < len(secuencia_juego):
+            nombre_terreno = secuencia_mapa[cursor_mapa]
+            nodo_juego = secuencia_juego[cursor_juego]
+            
+            if nodo_juego["tipo"] != "INVOCACION_MOVIMIENTO":
+                cursor_juego += 1
+                continue 
+
+            nombre_movimiento = nodo_juego["movimiento"]
+            
+            movimientos_permitidos = self.reglas_terreno.get(nombre_terreno, [])
+            if nombre_movimiento not in movimientos_permitidos:
+                raise Exception(f"Paso {paso}: El dinosaurio intentó '{nombre_movimiento}' sobre '{nombre_terreno}'. ¡Movimiento ilegal!")
+
+            mod_mientras = None
+            for mod in nodo_juego["opciones"]["modificadores"]:
+                if mod["nombre"] == "mientras":
+                    mod_mientras = mod
+
+            if mod_mientras:
+                terreno_condicion = mod_mientras["condicion"]
+                
+                if terreno_condicion != nombre_terreno:
+                    raise Exception(f"Paso {paso}: El bucle .mientras({terreno_condicion}) falló porque estás sobre '{nombre_terreno}'.")
+                
+                print(f"Paso {paso} OK: '{nombre_movimiento}' continuo sobre '{nombre_terreno}'.")
+                
+                if cursor_mapa + 1 < len(secuencia_mapa):
+                    # AHORA LEEMOS EL PRÓXIMO STRING DIRECTO
+                    proximo_terreno = secuencia_mapa[cursor_mapa + 1]
+                    if proximo_terreno == terreno_condicion:
+                        cursor_mapa += 1 
+                        paso += 1
+                        continue
+            
+            mods_intensidad = []  # Acá guardamos simple, doble, triple
+            mod_si_es = None      # Acá guardamos el valor de adentro del paréntesis
+            mod_si_hay = None     # Acá guardamos el valor de adentro del paréntesis
+            
+            for mod in nodo_juego["opciones"]["modificadores"]:
+                if mod["nombre"] in ["simple", "doble", "triple"]:
+                    mods_intensidad.append(mod["nombre"])
+                elif mod["nombre"] == "si_es":
+                    mod_si_es = mod["condicion"]
+                elif mod["nombre"] == "si_hay":
+                    mod_si_hay = mod["condicion"]
+
+            # --- REGLA ESTRICTA 1: EL SALTO ---
+            if nombre_movimiento == "Saltar":
+                # A. Exigimos la intensidad (simple, doble, triple)
+                mod_requerido = self.requisitos_salto.get(nombre_terreno)
+                if mod_requerido and mod_requerido not in mods_intensidad:
+                    raise Exception(f"Paso {paso}: Para saltar '{nombre_terreno}' necesitás el modificador de intensidad '.{mod_requerido}'.")
+                
+                # B. Exigimos el .si_es() para obstáculos vivos
+                if nombre_terreno in ["Paloma", "Aguila"]:
+                    if mod_si_es != nombre_terreno:
+                        raise Exception(f"Paso {paso}: Para esquivar '{nombre_terreno}' es obligatorio declarar explícitamente '.si_es({nombre_terreno})'. (Ej: Saltar.{mod_requerido}.si_es({nombre_terreno}))")
+
+            # --- REGLA ESTRICTA 2: EL DESPEGUE ---
+            if nombre_movimiento == "Despegar":
+                if mod_si_hay != "Nave":
+                    raise Exception(f"Paso {paso}: El movimiento Despegar exige estrictamente el modificador '.si_hay(Nave)'.")
+            
+            # --- REGLA ESTRICTA 3: EXCLUSIVIDAD DE "SI_HAY" ---
+            elif mod_si_hay is not None:
+                # Si llegó acá, significa que usó si_hay en Correr, Nadar o Saltar.
+                raise Exception(f"Paso {paso}: Movimiento ilegal. El modificador '.si_hay' es de uso exclusivo para la acción 'Despegar'.")
+
+            print(f"Paso {paso} OK: '{nombre_movimiento}' superó '{nombre_terreno}'.")
+            cursor_mapa += 1
+            cursor_juego += 1
+            paso += 1
+
+        if cursor_mapa < len(secuencia_mapa):
+            raise Exception("❌ GAME OVER: Te quedaste sin instrucciones y el Dino no llegó al final del mapa.")
+        if cursor_juego < len(secuencia_juego):
+            raise Exception("❌ ERROR LÓGICO: Te caíste del mapa. Sobran instrucciones pero el nivel ya terminó.")
+    
+    def aplanar_mapa(self, secuencia):
+        plano = []
+        for nodo in secuencia:
+            if nodo["tipo"] == "INVOCACION_ELEMENTO":
+                cantidad = nodo.get("cantidad")
+                if cantidad is None:
+                    cantidad = 1
+                plano.extend([nodo["elemento"]] * cantidad)
+            elif nodo["tipo"] == "INVOCACION_ID":
+                # Magia recursiva: Si es variable, aplanamos su contenido interior
+                valor_variable = self.tabla_simbolos[nodo["id"]]
+                plano.extend(self.aplanar_mapa(valor_variable))
+        return plano
+
+    def aplanar_juego(self, secuencia):
+        plano = []
+        for nodo in secuencia:
+            if nodo["tipo"] == "INVOCACION_MOVIMIENTO":
+                cantidad = nodo["opciones"].get("parametro_numerico")
+                if cantidad:
+                    # Si dice Correr(3), creamos 3 nodos individuales de Correr
+                    for _ in range(cantidad):
+                        nuevo_nodo = {
+                            "tipo": "INVOCACION_MOVIMIENTO",
+                            "movimiento": nodo["movimiento"],
+                            "opciones": {
+                                "parametro_numerico": None,
+                                "modificadores": nodo["opciones"]["modificadores"]
+                            }
+                        }
+                        plano.append(nuevo_nodo)
+                else:
+                    plano.append(nodo)
+            elif nodo["tipo"] == "INVOCACION_ID":
+                valor_variable = self.tabla_simbolos[nodo["id"]]
+                plano.extend(self.aplanar_juego(valor_variable))
+        return plano
+    
+    def analizar(self, ast):
+        if not ast or ast.get("tipo") != "PROGRAMA":
+            print("Error: AST incorrecto")
+            return False
+
+        print("\n--- INICIANDO ANÁLISIS SEMÁNTICO ---")
+        
+        try:
+            # 1. Llenamos la memoria con las variables
+            self.registrar_declaraciones(ast["declaraciones"])
+            
+            # 2. Validamos que lo que se usa en el Mapa exista y tenga sentido
+            self.validar_secuencia(ast["mapa"]["contenido"], contexto="MAPA")
+            
+            # 3. Validamos que lo que se usa en el Juego exista y tenga sentido
+            self.validar_secuencia(ast["juego"]["contenido"], contexto="JUEGO")
+
+            mapa_plano = self.aplanar_mapa(ast["mapa"]["contenido"])
+            juego_plano = self.aplanar_juego(ast["juego"]["contenido"])
+
+            self.validar_fisicas_del_juego(mapa_plano, juego_plano)
+                    
+            self.validar_bloque_final(ast["validacion"], ast["mapa"]["nombre"], ast["juego"]["nombre"])
+                    
+            print("\n✅ ¡Análisis Semántico Exitoso! El código es 100% jugable.")
+            return True
+        except Exception as e:
+                print(f"\n❌ ERROR SEMÁNTICO: {e}")
+                return False
+
+    def registrar_declaraciones(self, declaraciones):
+        for dec in declaraciones:
+            nombre_variable = dec["identificador"]
+            valor = dec["valor"]
+            
+            # Guardamos en la memoria
+            self.tabla_simbolos[nombre_variable] = valor
+            print(f"Memoria: Se registró la variable '{nombre_variable}'.")
+
+    def validar_secuencia(self, secuencia, contexto):
+        for item in secuencia:
+            if item["tipo"] == "INVOCACION_ID":
+                nombre_id = item["id"]
+                if nombre_id not in self.tabla_simbolos:
+                    raise Exception(f"En el {contexto}: La variable '{nombre_id}' no fue declarada.")
+                print(f"Éxito: Se usó la variable '{nombre_id}' correctamente.")
+            
+            # Acá agregarás las reglas para ELEMENTO y MOVIMIENTO después...
+
+    def validar_bloque_final(self, validacion, nombre_mapa, nombre_juego):
+        if validacion["mapa_objetivo"] != nombre_mapa:
+            raise Exception(f"El Validar busca el mapa '{validacion['mapa_objetivo']}', pero el mapa se llama '{nombre_mapa}'.")
+        
+        if validacion["juego_objetivo"] != nombre_juego:
+            raise Exception(f"El Validar busca el juego '{validacion['juego_objetivo']}', pero el juego se llama '{nombre_juego}'.")

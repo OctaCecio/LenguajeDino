@@ -1,0 +1,36 @@
+Lenguaje que utiliza todas las reglas:
+
+
+<Pista_Inicial> = Pasto(2)
+<Fosa_Acuatica> = Agua(4)
+<Trampa_Lava> = Lava
+<Sprint> = Correr(2)
+
+MAPA Nivel_Definitivo { 
+    Pasto, 
+    <Pista_Inicial>, 
+    <Fosa_Acuatica>, 
+    Pasto, 
+    Paloma, 
+    <Pista_Inicial>, 
+    <Trampa_Lava>, 
+    Pasto, 
+    Aguila, 
+    Pasto, 
+    Nave 
+}
+
+JUEGO Dino_Maestro { 
+    Correr.mientras(Pasto), 
+    Nadar.mientras(Agua), 
+    Correr, 
+    Saltar.doble.si_es(Paloma), 
+    <Sprint>, 
+    Saltar.simple, 
+    Correr, 
+    Saltar.triple.si_es(Aguila), 
+    Correr, 
+    Despegar.si_hay(Nave) 
+}
+
+Validar ( Nivel_Definitivo , Dino_Maestro )

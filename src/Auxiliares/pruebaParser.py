@@ -1,5 +1,5 @@
-from scanner import LexerDino  
-from parser import ParserDino 
+from Auxiliares.scanner import LexerDino  
+from Auxiliares.parser import ParserDino 
 
 
 def ejecutar_compilador(codigo):

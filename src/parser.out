@@ -1,0 +1,616 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> programa
+Rule 1     programa -> lista_declaraciones mapa juego validacion
+Rule 2     lista_declaraciones -> declaracion lista_declaraciones
+Rule 3     lista_declaraciones -> empty
+Rule 4     declaracion -> ID = secuencia
+Rule 5     mapa -> TK_MAPA ID { secuencia }
+Rule 6     juego -> TK_JUEGO ID { secuencia }
+Rule 7     validacion -> TK_VALIDAR ( ID , ID )
+Rule 8     secuencia -> invocacion , secuencia
+Rule 9     secuencia -> invocacion
+Rule 10    invocacion -> ID
+Rule 11    invocacion -> ELEMENTO opcional_param_numero
+Rule 12    invocacion -> MOVIMIENTO extension_movimiento
+Rule 13    extension_movimiento -> ( NUMERO )
+Rule 14    extension_movimiento -> cadena_modificadores
+Rule 15    extension_movimiento -> empty
+Rule 16    cadena_modificadores -> . MODIFICADOR opciones_modificador
+Rule 17    opciones_modificador -> . MODIFICADOR opciones_modificador
+Rule 18    opciones_modificador -> ( parametro_modificador )
+Rule 19    opciones_modificador -> empty
+Rule 20    parametro_modificador -> ELEMENTO
+Rule 21    parametro_modificador -> ID
+Rule 22    opcional_param_numero -> ( NUMERO )
+Rule 23    opcional_param_numero -> empty
+Rule 24    empty -> <empty>
+
+Terminals, with rules where they appear
+
+(                    : 7 13 18 22
+)                    : 7 13 18 22
+,                    : 7 8
+.                    : 16 17
+=                    : 4
+ELEMENTO             : 11 20
+ID                   : 4 5 6 7 7 10 21
+MODIFICADOR          : 16 17
+MOVIMIENTO           : 12
+NUMERO               : 13 22
+TK_JUEGO             : 6
+TK_MAPA              : 5
+TK_VALIDAR           : 7
+error                : 
+{                    : 5 6
+}                    : 5 6
+
+Nonterminals, with rules where they appear
+
+cadena_modificadores : 14
+declaracion          : 2
+empty                : 3 15 19 23
+extension_movimiento : 12
+invocacion           : 8 9
+juego                : 1
+lista_declaraciones  : 1 2
+mapa                 : 1
+opcional_param_numero : 11
+opciones_modificador : 16 17
+parametro_modificador : 18
+programa             : 0
+secuencia            : 4 5 6 8
+validacion           : 1
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . programa
+    (1) programa -> . lista_declaraciones mapa juego validacion
+    (2) lista_declaraciones -> . declaracion lista_declaraciones
+    (3) lista_declaraciones -> . empty
+    (4) declaracion -> . ID = secuencia
+    (24) empty -> .
+
+    ID              shift and go to state 5
+    TK_MAPA         reduce using rule 24 (empty -> .)
+
+    programa                       shift and go to state 1
+    lista_declaraciones            shift and go to state 2
+    declaracion                    shift and go to state 3
+    empty                          shift and go to state 4
+
+state 1
+
+    (0) S' -> programa .
+
+
+
+state 2
+
+    (1) programa -> lista_declaraciones . mapa juego validacion
+    (5) mapa -> . TK_MAPA ID { secuencia }
+
+    TK_MAPA         shift and go to state 7
+
+    mapa                           shift and go to state 6
+
+state 3
+
+    (2) lista_declaraciones -> declaracion . lista_declaraciones
+    (2) lista_declaraciones -> . declaracion lista_declaraciones
+    (3) lista_declaraciones -> . empty
+    (4) declaracion -> . ID = secuencia
+    (24) empty -> .
+
+    ID              shift and go to state 5
+    TK_MAPA         reduce using rule 24 (empty -> .)
+
+    declaracion                    shift and go to state 3
+    lista_declaraciones            shift and go to state 8
+    empty                          shift and go to state 4
+
+state 4
+
+    (3) lista_declaraciones -> empty .
+
+    TK_MAPA         reduce using rule 3 (lista_declaraciones -> empty .)
+
+
+state 5
+
+    (4) declaracion -> ID . = secuencia
+
+    =               shift and go to state 9
+
+
+state 6
+
+    (1) programa -> lista_declaraciones mapa . juego validacion
+    (6) juego -> . TK_JUEGO ID { secuencia }
+
+    TK_JUEGO        shift and go to state 11
+
+    juego                          shift and go to state 10
+
+state 7
+
+    (5) mapa -> TK_MAPA . ID { secuencia }
+
+    ID              shift and go to state 12
+
+
+state 8
+
+    (2) lista_declaraciones -> declaracion lista_declaraciones .
+
+    TK_MAPA         reduce using rule 2 (lista_declaraciones -> declaracion lista_declaraciones .)
+
+
+state 9
+
+    (4) declaracion -> ID = . secuencia
+    (8) secuencia -> . invocacion , secuencia
+    (9) secuencia -> . invocacion
+    (10) invocacion -> . ID
+    (11) invocacion -> . ELEMENTO opcional_param_numero
+    (12) invocacion -> . MOVIMIENTO extension_movimiento
+
+    ID              shift and go to state 13
+    ELEMENTO        shift and go to state 16
+    MOVIMIENTO      shift and go to state 17
+
+    secuencia                      shift and go to state 14
+    invocacion                     shift and go to state 15
+
+state 10
+
+    (1) programa -> lista_declaraciones mapa juego . validacion
+    (7) validacion -> . TK_VALIDAR ( ID , ID )
+
+    TK_VALIDAR      shift and go to state 19
+
+    validacion                     shift and go to state 18
+
+state 11
+
+    (6) juego -> TK_JUEGO . ID { secuencia }
+
+    ID              shift and go to state 20
+
+
+state 12
+
+    (5) mapa -> TK_MAPA ID . { secuencia }
+
+    {               shift and go to state 21
+
+
+state 13
+
+    (10) invocacion -> ID .
+
+    ,               reduce using rule 10 (invocacion -> ID .)
+    ID              reduce using rule 10 (invocacion -> ID .)
+    TK_MAPA         reduce using rule 10 (invocacion -> ID .)
+    }               reduce using rule 10 (invocacion -> ID .)
+
+
+state 14
+
+    (4) declaracion -> ID = secuencia .
+
+    ID              reduce using rule 4 (declaracion -> ID = secuencia .)
+    TK_MAPA         reduce using rule 4 (declaracion -> ID = secuencia .)
+
+
+state 15
+
+    (8) secuencia -> invocacion . , secuencia
+    (9) secuencia -> invocacion .
+
+    ,               shift and go to state 22
+    ID              reduce using rule 9 (secuencia -> invocacion .)
+    TK_MAPA         reduce using rule 9 (secuencia -> invocacion .)
+    }               reduce using rule 9 (secuencia -> invocacion .)
+
+
+state 16
+
+    (11) invocacion -> ELEMENTO . opcional_param_numero
+    (22) opcional_param_numero -> . ( NUMERO )
+    (23) opcional_param_numero -> . empty
+    (24) empty -> .
+
+    (               shift and go to state 24
+    ,               reduce using rule 24 (empty -> .)
+    ID              reduce using rule 24 (empty -> .)
+    TK_MAPA         reduce using rule 24 (empty -> .)
+    }               reduce using rule 24 (empty -> .)
+
+    opcional_param_numero          shift and go to state 23
+    empty                          shift and go to state 25
+
+state 17
+
+    (12) invocacion -> MOVIMIENTO . extension_movimiento
+    (13) extension_movimiento -> . ( NUMERO )
+    (14) extension_movimiento -> . cadena_modificadores
+    (15) extension_movimiento -> . empty
+    (16) cadena_modificadores -> . . MODIFICADOR opciones_modificador
+    (24) empty -> .
+
+    (               shift and go to state 27
+    .               shift and go to state 30
+    ,               reduce using rule 24 (empty -> .)
+    ID              reduce using rule 24 (empty -> .)
+    TK_MAPA         reduce using rule 24 (empty -> .)
+    }               reduce using rule 24 (empty -> .)
+
+    extension_movimiento           shift and go to state 26
+    cadena_modificadores           shift and go to state 28
+    empty                          shift and go to state 29
+
+state 18
+
+    (1) programa -> lista_declaraciones mapa juego validacion .
+
+    $end            reduce using rule 1 (programa -> lista_declaraciones mapa juego validacion .)
+
+
+state 19
+
+    (7) validacion -> TK_VALIDAR . ( ID , ID )
+
+    (               shift and go to state 31
+
+
+state 20
+
+    (6) juego -> TK_JUEGO ID . { secuencia }
+
+    {               shift and go to state 32
+
+
+state 21
+
+    (5) mapa -> TK_MAPA ID { . secuencia }
+    (8) secuencia -> . invocacion , secuencia
+    (9) secuencia -> . invocacion
+    (10) invocacion -> . ID
+    (11) invocacion -> . ELEMENTO opcional_param_numero
+    (12) invocacion -> . MOVIMIENTO extension_movimiento
+
+    ID              shift and go to state 13
+    ELEMENTO        shift and go to state 16
+    MOVIMIENTO      shift and go to state 17
+
+    secuencia                      shift and go to state 33
+    invocacion                     shift and go to state 15
+
+state 22
+
+    (8) secuencia -> invocacion , . secuencia
+    (8) secuencia -> . invocacion , secuencia
+    (9) secuencia -> . invocacion
+    (10) invocacion -> . ID
+    (11) invocacion -> . ELEMENTO opcional_param_numero
+    (12) invocacion -> . MOVIMIENTO extension_movimiento
+
+    ID              shift and go to state 13
+    ELEMENTO        shift and go to state 16
+    MOVIMIENTO      shift and go to state 17
+
+    invocacion                     shift and go to state 15
+    secuencia                      shift and go to state 34
+
+state 23
+
+    (11) invocacion -> ELEMENTO opcional_param_numero .
+
+    ,               reduce using rule 11 (invocacion -> ELEMENTO opcional_param_numero .)
+    ID              reduce using rule 11 (invocacion -> ELEMENTO opcional_param_numero .)
+    TK_MAPA         reduce using rule 11 (invocacion -> ELEMENTO opcional_param_numero .)
+    }               reduce using rule 11 (invocacion -> ELEMENTO opcional_param_numero .)
+
+
+state 24
+
+    (22) opcional_param_numero -> ( . NUMERO )
+
+    NUMERO          shift and go to state 35
+
+
+state 25
+
+    (23) opcional_param_numero -> empty .
+
+    ,               reduce using rule 23 (opcional_param_numero -> empty .)
+    ID              reduce using rule 23 (opcional_param_numero -> empty .)
+    TK_MAPA         reduce using rule 23 (opcional_param_numero -> empty .)
+    }               reduce using rule 23 (opcional_param_numero -> empty .)
+
+
+state 26
+
+    (12) invocacion -> MOVIMIENTO extension_movimiento .
+
+    ,               reduce using rule 12 (invocacion -> MOVIMIENTO extension_movimiento .)
+    ID              reduce using rule 12 (invocacion -> MOVIMIENTO extension_movimiento .)
+    TK_MAPA         reduce using rule 12 (invocacion -> MOVIMIENTO extension_movimiento .)
+    }               reduce using rule 12 (invocacion -> MOVIMIENTO extension_movimiento .)
+
+
+state 27
+
+    (13) extension_movimiento -> ( . NUMERO )
+
+    NUMERO          shift and go to state 36
+
+
+state 28
+
+    (14) extension_movimiento -> cadena_modificadores .
+
+    ,               reduce using rule 14 (extension_movimiento -> cadena_modificadores .)
+    ID              reduce using rule 14 (extension_movimiento -> cadena_modificadores .)
+    TK_MAPA         reduce using rule 14 (extension_movimiento -> cadena_modificadores .)
+    }               reduce using rule 14 (extension_movimiento -> cadena_modificadores .)
+
+
+state 29
+
+    (15) extension_movimiento -> empty .
+
+    ,               reduce using rule 15 (extension_movimiento -> empty .)
+    ID              reduce using rule 15 (extension_movimiento -> empty .)
+    TK_MAPA         reduce using rule 15 (extension_movimiento -> empty .)
+    }               reduce using rule 15 (extension_movimiento -> empty .)
+
+
+state 30
+
+    (16) cadena_modificadores -> . . MODIFICADOR opciones_modificador
+
+    MODIFICADOR     shift and go to state 37
+
+
+state 31
+
+    (7) validacion -> TK_VALIDAR ( . ID , ID )
+
+    ID              shift and go to state 38
+
+
+state 32
+
+    (6) juego -> TK_JUEGO ID { . secuencia }
+    (8) secuencia -> . invocacion , secuencia
+    (9) secuencia -> . invocacion
+    (10) invocacion -> . ID
+    (11) invocacion -> . ELEMENTO opcional_param_numero
+    (12) invocacion -> . MOVIMIENTO extension_movimiento
+
+    ID              shift and go to state 13
+    ELEMENTO        shift and go to state 16
+    MOVIMIENTO      shift and go to state 17
+
+    secuencia                      shift and go to state 39
+    invocacion                     shift and go to state 15
+
+state 33
+
+    (5) mapa -> TK_MAPA ID { secuencia . }
+
+    }               shift and go to state 40
+
+
+state 34
+
+    (8) secuencia -> invocacion , secuencia .
+
+    ID              reduce using rule 8 (secuencia -> invocacion , secuencia .)
+    TK_MAPA         reduce using rule 8 (secuencia -> invocacion , secuencia .)
+    }               reduce using rule 8 (secuencia -> invocacion , secuencia .)
+
+
+state 35
+
+    (22) opcional_param_numero -> ( NUMERO . )
+
+    )               shift and go to state 41
+
+
+state 36
+
+    (13) extension_movimiento -> ( NUMERO . )
+
+    )               shift and go to state 42
+
+
+state 37
+
+    (16) cadena_modificadores -> . MODIFICADOR . opciones_modificador
+    (17) opciones_modificador -> . . MODIFICADOR opciones_modificador
+    (18) opciones_modificador -> . ( parametro_modificador )
+    (19) opciones_modificador -> . empty
+    (24) empty -> .
+
+    .               shift and go to state 43
+    (               shift and go to state 45
+    ,               reduce using rule 24 (empty -> .)
+    ID              reduce using rule 24 (empty -> .)
+    TK_MAPA         reduce using rule 24 (empty -> .)
+    }               reduce using rule 24 (empty -> .)
+
+    opciones_modificador           shift and go to state 44
+    empty                          shift and go to state 46
+
+state 38
+
+    (7) validacion -> TK_VALIDAR ( ID . , ID )
+
+    ,               shift and go to state 47
+
+
+state 39
+
+    (6) juego -> TK_JUEGO ID { secuencia . }
+
+    }               shift and go to state 48
+
+
+state 40
+
+    (5) mapa -> TK_MAPA ID { secuencia } .
+
+    TK_JUEGO        reduce using rule 5 (mapa -> TK_MAPA ID { secuencia } .)
+
+
+state 41
+
+    (22) opcional_param_numero -> ( NUMERO ) .
+
+    ,               reduce using rule 22 (opcional_param_numero -> ( NUMERO ) .)
+    ID              reduce using rule 22 (opcional_param_numero -> ( NUMERO ) .)
+    TK_MAPA         reduce using rule 22 (opcional_param_numero -> ( NUMERO ) .)
+    }               reduce using rule 22 (opcional_param_numero -> ( NUMERO ) .)
+
+
+state 42
+
+    (13) extension_movimiento -> ( NUMERO ) .
+
+    ,               reduce using rule 13 (extension_movimiento -> ( NUMERO ) .)
+    ID              reduce using rule 13 (extension_movimiento -> ( NUMERO ) .)
+    TK_MAPA         reduce using rule 13 (extension_movimiento -> ( NUMERO ) .)
+    }               reduce using rule 13 (extension_movimiento -> ( NUMERO ) .)
+
+
+state 43
+
+    (17) opciones_modificador -> . . MODIFICADOR opciones_modificador
+
+    MODIFICADOR     shift and go to state 49
+
+
+state 44
+
+    (16) cadena_modificadores -> . MODIFICADOR opciones_modificador .
+
+    ,               reduce using rule 16 (cadena_modificadores -> . MODIFICADOR opciones_modificador .)
+    ID              reduce using rule 16 (cadena_modificadores -> . MODIFICADOR opciones_modificador .)
+    TK_MAPA         reduce using rule 16 (cadena_modificadores -> . MODIFICADOR opciones_modificador .)
+    }               reduce using rule 16 (cadena_modificadores -> . MODIFICADOR opciones_modificador .)
+
+
+state 45
+
+    (18) opciones_modificador -> ( . parametro_modificador )
+    (20) parametro_modificador -> . ELEMENTO
+    (21) parametro_modificador -> . ID
+
+    ELEMENTO        shift and go to state 51
+    ID              shift and go to state 52
+
+    parametro_modificador          shift and go to state 50
+
+state 46
+
+    (19) opciones_modificador -> empty .
+
+    ,               reduce using rule 19 (opciones_modificador -> empty .)
+    ID              reduce using rule 19 (opciones_modificador -> empty .)
+    TK_MAPA         reduce using rule 19 (opciones_modificador -> empty .)
+    }               reduce using rule 19 (opciones_modificador -> empty .)
+
+
+state 47
+
+    (7) validacion -> TK_VALIDAR ( ID , . ID )
+
+    ID              shift and go to state 53
+
+
+state 48
+
+    (6) juego -> TK_JUEGO ID { secuencia } .
+
+    TK_VALIDAR      reduce using rule 6 (juego -> TK_JUEGO ID { secuencia } .)
+
+
+state 49
+
+    (17) opciones_modificador -> . MODIFICADOR . opciones_modificador
+    (17) opciones_modificador -> . . MODIFICADOR opciones_modificador
+    (18) opciones_modificador -> . ( parametro_modificador )
+    (19) opciones_modificador -> . empty
+    (24) empty -> .
+
+    .               shift and go to state 43
+    (               shift and go to state 45
+    ,               reduce using rule 24 (empty -> .)
+    ID              reduce using rule 24 (empty -> .)
+    TK_MAPA         reduce using rule 24 (empty -> .)
+    }               reduce using rule 24 (empty -> .)
+
+    opciones_modificador           shift and go to state 54
+    empty                          shift and go to state 46
+
+state 50
+
+    (18) opciones_modificador -> ( parametro_modificador . )
+
+    )               shift and go to state 55
+
+
+state 51
+
+    (20) parametro_modificador -> ELEMENTO .
+
+    )               reduce using rule 20 (parametro_modificador -> ELEMENTO .)
+
+
+state 52
+
+    (21) parametro_modificador -> ID .
+
+    )               reduce using rule 21 (parametro_modificador -> ID .)
+
+
+state 53
+
+    (7) validacion -> TK_VALIDAR ( ID , ID . )
+
+    )               shift and go to state 56
+
+
+state 54
+
+    (17) opciones_modificador -> . MODIFICADOR opciones_modificador .
+
+    ,               reduce using rule 17 (opciones_modificador -> . MODIFICADOR opciones_modificador .)
+    ID              reduce using rule 17 (opciones_modificador -> . MODIFICADOR opciones_modificador .)
+    TK_MAPA         reduce using rule 17 (opciones_modificador -> . MODIFICADOR opciones_modificador .)
+    }               reduce using rule 17 (opciones_modificador -> . MODIFICADOR opciones_modificador .)
+
+
+state 55
+
+    (18) opciones_modificador -> ( parametro_modificador ) .
+
+    ,               reduce using rule 18 (opciones_modificador -> ( parametro_modificador ) .)
+    ID              reduce using rule 18 (opciones_modificador -> ( parametro_modificador ) .)
+    TK_MAPA         reduce using rule 18 (opciones_modificador -> ( parametro_modificador ) .)
+    }               reduce using rule 18 (opciones_modificador -> ( parametro_modificador ) .)
+
+
+state 56
+
+    (7) validacion -> TK_VALIDAR ( ID , ID ) .
+
+    $end            reduce using rule 7 (validacion -> TK_VALIDAR ( ID , ID ) .)
+
