@@ -31,24 +31,34 @@ Al ejecutarse sobre toda la entrada, construye el árbol sintáctico de manera p
 Scanner:
 
 >    Define el vocabulario estableciendo las palabras y simbolos que existen mediante expresiones regulares.
+
 >    El scanner tiene que evaluar si la secuencia de caracteres ( lexema ) coincide con un patrón válido ( expresión regular) y retornar su token.
+
 >    Por detras, PLY genera un automata finito determinista y y construye una maquina de estados, el avance entre los caracteres lo hace automaticamente, y resuelve automaticamente la agrupacion de las palabras en base a la coincidencia más larga posible definida mientras el patrón de lectura siga siendo válido.
 
 Parser:
 
  >   El analizador sintáctico va a verificar el orden de los tokens y revisar que la oración tenga sentido en su estructura.
- 
- >   Toma la lista de tokens que recibe del scanner , y valida si las palabras, en el orden que llegaron, forman una estructura válida según la gramatica BNF y produce un AST ( arbol sintáctico)
+
+ >   Toma la lista de tokens que recibe del scanner , y valida si las palabras, en el orden que llegaron, forman una estructura válida según la gramatica BNF y produce un AST ( arbol sintáctico).
+
  >   Cada función p representa una regla de producción de la gramática, se comenta la regla gramatical  en los docstrings y ply usa estos comentarios para reconocer las reglas.
+
  >   Si la regla se reconoce la función construye un diccionario, las estructuras pequeñas se combinan y la funcion p_programa  convierte la suma de estos diccionarios en un ast. 
 
 Analizador semántico:
  >   Recibe el AST construido por el parser, y recorre el árbol verificando que tenga sentido según las reglas del lenguaje.
+
   >  Crea una tabla de simbolos utilizando un diccionario, en donde almacena los identificadores utilizados por el usuario, y el valor real de los mismos.
- >   Comprueba que las variables de identificador utilizadas hayan sido declaradas previamente (Consultando en su tabla de simbolos)
+
+ >   Comprueba que las variables de identificador utilizadas hayan sido declaradas previamente (Consultando en su tabla de simbolos).
+
  >   Las funciones aplanar_mapa() y aplanar_juego() sirven para convertir los identificadores en los elementos que realmente representan, para posteriormente recorrer tanto el mapa como el juego de manera simultanea comparando 1 a 1 si los movimientos realizados corresponden al tipo de terreno.
+
  >   No solo verifica reglas estáticas, sino que recorre el mapa junto a los movimientos, por lo que hace parcialmente de interpete.
+
  >    El analizador retorna true o false, imprimiendo errores en caso de ser necesario.
+ 
  >   El analizador semántico también valida la lógica del juego. Si detecta una colisión o un movimiento inválido, el nivel se considera no jugable y el intérprete no se ejecuta 
 
 
