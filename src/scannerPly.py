@@ -1,6 +1,5 @@
 import ply.lex as lex
 
-#Diccionario de palabras clave relacionadas al tipo de token que esperamos.
 reservadas = {
     "MAPA": "TK_MAPA",
     "JUEGO": "TK_JUEGO",
@@ -16,7 +15,6 @@ reservadas = {
     "mientras": "MODIFICADOR", "si_es": "MODIFICADOR", "si_hay": "MODIFICADOR"
 }
 
-# Lista de tokens. 2. 
 tokens = (
     'ID',
     'NUMERO',
@@ -28,10 +26,8 @@ tokens = (
     'MODIFICADOR'
 )
 
-#PLY maneja simbolos de un solo caracter automaticamente.
 literals = ['{', '}', '(', ')', '.', ',', '=', '<', '>']
 
-#caracteres ignorados ( salto de linea o espacios en blanco)
 t_ignore = ' \t\r'
 
 
@@ -43,24 +39,23 @@ def t_NUMERO(t):
 
 def t_ID_CORCHETE(t):
     r'<[^>]+>'
-    t.type = 'ID'  #Lo que esta declarado por el usuario < > también debe ser un ID.
+    t.type = 'ID'  
     return t
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-    t.type = reservadas.get(t.value, 'ID')    # Si no es una palabra reservada, es un ID.
+    t.type = reservadas.get(t.value, 'ID')    
     return t
 
 
-#Seguimiento de lineas
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-# Caso de error léxico 
 def t_error(t):
     print(f"ERROR LÉXICO: Carácter '{t.value[0]}' no reconocido en la línea {t.lexer.lineno}")
+    t.lexer.hubo_error = True
     t.lexer.skip(1) #Sigue leyendo ignorando el caracter que dio error, asi de una sola ejecución trae todos los errores.
 
 lexer = lex.lex()
-
+lexer.hubo_error = False

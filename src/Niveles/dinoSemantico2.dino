@@ -1,0 +1,28 @@
+<Piso> = Pasto(3)
+<ComboPajaro> = Paloma, Pasto, Aguila
+
+MAPA Nivel { 
+    <Piso>, 
+    Agua(2), 
+    Pasto, 
+    <ComboPajaro>, 
+    Pasto, 
+    Lava, 
+    Pasto, 
+    Nave 
+}
+
+JUEGO Dino_Pro { 
+    Nadar, 
+    Nadar.mientras(Agua), 
+    Saltar, 
+    Saltar.doble.si_es(Paloma), 
+    Correr, 
+    Saltar.triple.si_es(Aguila), 
+    Correr, 
+    Saltar.simple, 
+    Correr, 
+    Despegar.si_hay(Nave) 
+}
+
+Validar ( Nivel_Maestro , Dino_Pro )

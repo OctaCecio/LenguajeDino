@@ -1,6 +1,3 @@
-Lenguaje que utiliza todas las reglas:
-
-
 <Pista_Inicial> = Pasto(2)
 <Fosa_Acuatica> = Agua(4)
 <Trampa_Lava> = Lava
@@ -34,3 +31,7 @@ JUEGO Dino_Maestro {
 }
 
 Validar ( Nivel_Definitivo , Dino_Maestro )
+
+
+
+
