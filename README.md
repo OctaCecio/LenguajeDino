@@ -37,6 +37,7 @@ Scanner:
 Parser:
 
  >   El analizador sintáctico va a verificar el orden de los tokens y revisar que la oración tenga sentido en su estructura.
+ 
  >   Toma la lista de tokens que recibe del scanner , y valida si las palabras, en el orden que llegaron, forman una estructura válida según la gramatica BNF y produce un AST ( arbol sintáctico)
  >   Cada función p representa una regla de producción de la gramática, se comenta la regla gramatical  en los docstrings y ply usa estos comentarios para reconocer las reglas.
  >   Si la regla se reconoce la función construye un diccionario, las estructuras pequeñas se combinan y la funcion p_programa  convierte la suma de estos diccionarios en un ast. 
